@@ -1,0 +1,60 @@
+import pygame
+pygame.mixer.init()
+
+"""module will contain a class that controls sounds"""
+
+class Sound():
+    """play sounds"""
+    def __init__(self,filename):
+        self.filename = filename
+        self.sound = pygame.mixer.Sound(self.filename)
+
+    
+    def play_shooting_sound(self):
+        """Plays the shooting sound"""
+        self.sound.play()
+    
+    def decrease_sound_volume(self):
+        """Reduces the sound volume, makes it a bit lower (50 percent)"""
+        self.sound.set_volume(0.5)
+
+class BackgroundMusic():
+    def __init__(self, filename):
+        self.filename = filename
+        #This is the default time stamp, meaning song
+        #starts from the beginnning except for the 
+        # game end music that plays whenever game ends 
+        self.music_time_stamp = 0
+
+    def play_music(self):
+        """Plays background music"""
+        pygame.mixer.music.load(self.filename)
+        try:
+            #This code assumes error happens as a result of
+            #timestamp becoming negative like -5,
+            #in that case max(0,-5) should return the max of 0 to -5,
+            #which is 0, and then the music will start from start
+            if self.music_time_stamp<0:
+                print("Caught an Error")
+            safe_position = max(0.0,self.music_time_stamp)
+            pygame.mixer.music.play(-1,safe_position)
+        except pygame.error:
+            pygame.mixer.music.play(-1)
+            print("Wow, error actually skipped that.")
+
+    def stop_music(self):
+        """Stop background music"""
+        pygame.mixer.music.stop()
+    
+    def save_and_stop_music(self):
+        """This method should save the time at which a music was stopped
+        snd then stop the music, the saved time ensures
+        that the music can continue where it left off."""
+
+        # update attribute to get the time the music stop.
+        self.music_time_stamp = pygame.mixer.music.get_pos()/1000 
+        #divided by 1000 converts the timestamp of the music from
+        #the default milliseconds that would have been detected to seconds.
+
+        #Stop music
+        pygame.mixer.music.stop()
